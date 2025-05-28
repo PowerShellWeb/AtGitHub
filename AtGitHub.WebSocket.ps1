@@ -192,9 +192,15 @@ function saveFirehose {
                         continue
                     }
                     try {
-                        $likesTable.Rows.Add($foundPost.uri, $message.commit.record.subject.uri, $atUri, $message.commit.record.createdAt)                        
-                        $foundPost.LikeCount++
-                        Write-Host "$($foundPost.uri) $atUri has been liked $($foundPost.LikeCount) times"
+                        if (-not $likesTable.Rows.Find($atUri)) {
+                            # Add the like to the likes table
+                            $likesTable.Rows.Add($foundPost.uri, $message.commit.record.subject.uri, $atUri, $message.commit.record.createdAt)
+                            if (-not "$($foundPost.LikeCount)") {
+                                $foundPost.LikeCount = 0
+                            }
+                            $foundPost.LikeCount++
+                            Write-Host "$($foundPost.uri) $atUri has been liked $($foundPost.LikeCount) times"
+                        }
                     } catch {
                         Write-Verbose "Caught an Error adding a like (this could mean it was unrelated to a tracked post): $($_.Exception.Message) $($_.Exception | Out-String)"
                     }
@@ -203,9 +209,14 @@ function saveFirehose {
                     $foundPost =  $postsTable.Rows.Find($message.commit.record.subject.uri)
                     if (-not $foundPost) { continue }
                     try {
-                        $repostTable.Rows.Add($foundPost.Uri, $message.commit.record.subject.uri, $atUri, $message.commit.record.createdAt)
-                        $foundPost.RepostCount++
-                        Write-Host "$($foundPost.Uri) $atUri has been reposted $($foundPost.RepostCount) times"
+                        if (-not $repostTable.Rows.Find($atUri)) {
+                            $repostTable.Rows.Add($foundPost.Uri, $message.commit.record.subject.uri, $atUri, $message.commit.record.createdAt)
+                            if (-not "$($foundPost.RepostCount)") {
+                                $foundPost.LikeCount = 0
+                            }
+                            $foundPost.RepostCount++
+                            Write-Host "$($foundPost.Uri) $atUri has been reposted $($foundPost.RepostCount) times"
+                        }                        
                     }
                     catch {
                         Write-Verbose "Caught an Error adding a like (this could mean it was unrelated to a tracked post): $($_.Exception.Message) $($_.Exception | Out-String)"

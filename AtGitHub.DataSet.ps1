@@ -1,4 +1,7 @@
-param([string]$ZipPath = './AtGitHub.zip')
+param(
+    [string]$ZipPath = './AtGitHub.zip',
+    [string]$XsdPath = './AtGitHub.xsd'
+)
 
 if ($PSScriptRoot) { Push-Location $PSScriptRoot }
 
@@ -94,6 +97,10 @@ if (Test-Path -Path $ZipPath) {
         }
     }
     $atPackage.Close()
+}
+
+if ($XsdPath) {
+    $atGitHubData.WriteXmlSchema($(Join-Path $pwd $XsdPath))
 }
 
 if ($PSScriptRoot) { Pop-Location }

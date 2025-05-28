@@ -173,7 +173,8 @@ do {
         Write-Host "Processed batch of $($batch.Length) in $($timeframes[-1]) - Last Post @ $($batch[-1].commit.record.createdAt)" -ForegroundColor Green
         if ($matchingItems) {            
             Write-Host "Filtered batch to $($matchingItems.Length) items" -ForegroundColor Green
-            $matchingItems | saveFirehose            
+            $matchingItems | saveFirehose
+            $totalProcessed += $matchingItems.Length
         }
     }
     
@@ -190,7 +191,8 @@ if ($batch) {
     Write-Host "Processed batch of $($batch.Length) in $($timeframes[-1]) - Last Post @ $($batch[-1].commit.record.createdAt)" -ForegroundColor Green
     if ($matchingItems) {            
         Write-Host "Filtered batch to $($matchingItems.Length) items" -ForegroundColor Green
-        $matchingItems | saveFirehose            
+        $matchingItems | saveFirehose
+        $totalProcessed += $matchingItems.Length
     }
 }
 

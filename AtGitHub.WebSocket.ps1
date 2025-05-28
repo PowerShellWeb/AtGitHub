@@ -10,7 +10,7 @@ $Collections = @('app.bsky.feed.post','app.bsky.feed.like','app.bsky.feed.repost
 $Dids = @(),
 
 [TimeSpan]
-$Since = [TimeSpan]::FromDays(.4),
+$Since = [TimeSpan]::FromDays(.25),
 
 [TimeSpan]
 $TimeOut = [TimeSpan]::FromMinutes(20),
@@ -212,7 +212,7 @@ function saveFirehose {
                         if (-not $repostTable.Rows.Find($atUri)) {
                             $repostTable.Rows.Add($foundPost.Uri, $message.commit.record.subject.uri, $atUri, $message.commit.record.createdAt)
                             if (-not "$($foundPost.RepostCount)") {
-                                $foundPost.LikeCount = 0
+                                $foundPost.RepostCount = 0
                             }
                             $foundPost.RepostCount++
                             Write-Host "$($foundPost.Uri) $atUri has been reposted $($foundPost.RepostCount) times"

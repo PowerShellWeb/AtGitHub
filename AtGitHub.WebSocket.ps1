@@ -265,19 +265,21 @@ filter toAtUri {
 
 Write-Host "Listening To Jetstream: $jetstreamUrl" -ForegroundColor Cyan
 Write-Host "Starting loop @ $([DateTime]::Now)" -ForegroundColor Cyan
-$batchStart = [DateTime]::Now
+$watchStart = [DateTime]::Now
 $filesFound = @()
+$totalProcessed = [long]0
+$timeframes = @()
 do {
+    $batchStart = [DateTime]::Now
     $batch =$Jetstream | Receive-Job -ErrorAction Ignore     
     $matchingItems = @($batch | 
-        Where-Object $AtFilter)
-        
-    
+        Where-Object $AtFilter)        
 
     if ($batch) {
-        Write-Host "Processed batch of $($batch.Length) in $([DateTime]::Now - $batchStart) - Last Post @ $($batch[-1].commit.record.createdAt)" -ForegroundColor Green
+        $timeframes += [DateTime]::Now - $batchStart
+        Write-Host "Processed batch of $($batch.Length) in $($timeframes[-1]) - Last Post @ $($batch[-1].commit.record.createdAt)" -ForegroundColor Green
         if ($matchingItems) {            
-            Write-Host "Found $($matchingItems.Length) matches" -ForegroundColor Green
+            Write-Host "Filtered batch to $($matchingItems.Length) items" -ForegroundColor Green
             $matchingItems | saveFirehose            
         }
     }
@@ -285,10 +287,19 @@ do {
     Start-Sleep -Milliseconds (Get-Random -Min .1kb -Max 1kb)
 } while ($Jetstream.JobStateInfo.State -in 'NotStarted','Running') 
 
-$Jetstream | 
-    Receive-Job | 
-    Where-Object $AtFilter |
-    saveFirehose
+
+$batch =$Jetstream | Receive-Job -ErrorAction Ignore     
+$matchingItems = @($batch | 
+    Where-Object $AtFilter)        
+
+if ($batch) {
+    $timeframes += [DateTime]::Now - $batchStart
+    Write-Host "Processed batch of $($batch.Length) in $($timeframes[-1]) - Last Post @ $($batch[-1].commit.record.createdAt)" -ForegroundColor Green
+    if ($matchingItems) {            
+        Write-Host "Filtered batch to $($matchingItems.Length) items" -ForegroundColor Green
+        $matchingItems | saveFirehose            
+    }
+}
     
 $atPackage =
     [IO.Packaging.Package]::Open(

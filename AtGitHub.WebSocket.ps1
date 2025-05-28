@@ -13,7 +13,7 @@ $Dids = @(),
 $Since = [TimeSpan]::FromHours(3),
 
 [TimeSpan]
-$TimeOut = [TimeSpan]::FromMinutes(20),
+$TimeOut = [TimeSpan]::FromMinutes(25),
 
 [ScriptBlock]
 $AtFilter = {

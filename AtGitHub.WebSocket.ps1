@@ -13,7 +13,7 @@ $Dids = @(),
 $Since = [TimeSpan]::FromDays(.5),
 
 [TimeSpan]
-$TimeOut = [TimeSpan]::FromMinutes(15),
+$TimeOut = [TimeSpan]::FromMinutes(20),
 
 [ScriptBlock]
 $AtFilter = {
@@ -266,7 +266,6 @@ filter toAtUri {
 Write-Host "Listening To Jetstream: $jetstreamUrl" -ForegroundColor Cyan
 Write-Host "Starting loop @ $([DateTime]::Now)" -ForegroundColor Cyan
 $watchStart = [DateTime]::Now
-$filesFound = @()
 $totalProcessed = [long]0
 $timeframes = @()
 do {
@@ -300,6 +299,9 @@ if ($batch) {
         $matchingItems | saveFirehose            
     }
 }
+
+$totalTime = $watchStart - [DateTime]::Now
+Write-Host "$totalProcessed items processed in $($totalTime) - Average time per item: $($totalProcessed / $totalTime.TotalSeconds) items/sec" -ForegroundColor Cyan
     
 $atPackage =
     [IO.Packaging.Package]::Open(
@@ -335,4 +337,4 @@ $atPackage.Close()
 Get-Item $ZipPath | 
     Add-Member NoteProperty CommitMessage "Syncing From At Protocol [skip ci]" -Force -PassThru
 
-if ($PSScriptRoot) { Pop-Location}
+if ($PSScriptRoot) { Pop-Location }

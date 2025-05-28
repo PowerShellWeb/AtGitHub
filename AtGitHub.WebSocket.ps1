@@ -10,7 +10,7 @@ $Collections = @('app.bsky.feed.post','app.bsky.feed.like','app.bsky.feed.repost
 $Dids = @(),
 
 [TimeSpan]
-$Since = [TimeSpan]::FromDays(.2),
+$Since = [TimeSpan]::FromHours(3),
 
 [TimeSpan]
 $TimeOut = [TimeSpan]::FromMinutes(20),
@@ -245,18 +245,8 @@ $jetstreamUrl = @(
         }
         foreach ($did in $Dids) {
             "wantedDids=$([Uri]::EscapeDataString($did))"
-        }
-        if ($atGitHubData.Tables['app.bsky.feed.post']) {
-            $lastCreatedAtTime = $atGitHubData.Tables['app.bsky.feed.post'].Select("createdAt IS NOT NULL", "createdAt DESC")[0].message.time_us
-            if ($lastCreatedAtTime) {
-                Write-Host "Last time_us: $lastCreatedAtTime"
-                "cursor=$lastCreatedAtTime"
-            } else {
-                "cursor=$([DateTimeOffset]::Now.Add(-$Since).ToUnixTimeMilliseconds())"
-            }            
-        } else {
-            "cursor=$([DateTimeOffset]::Now.Add(-$Since).ToUnixTimeMilliseconds())"             
-        }
+        }        
+        "cursor=$([DateTimeOffset]::Now.Add(-$Since).ToUnixTimeMilliseconds())"
     ) -join '&'
 ) -join ''
 

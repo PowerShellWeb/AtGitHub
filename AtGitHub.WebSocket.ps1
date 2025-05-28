@@ -10,7 +10,7 @@ $Collections = @('app.bsky.feed.post','app.bsky.feed.like','app.bsky.feed.repost
 $Dids = @(),
 
 [TimeSpan]
-$Since = [TimeSpan]::FromDays(.25),
+$Since = [TimeSpan]::FromDays(.2),
 
 [TimeSpan]
 $TimeOut = [TimeSpan]::FromMinutes(20),

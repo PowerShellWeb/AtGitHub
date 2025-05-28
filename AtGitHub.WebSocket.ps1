@@ -247,9 +247,13 @@ $jetstreamUrl = @(
             "wantedDids=$([Uri]::EscapeDataString($did))"
         }
         if ($atGitHubData.Tables['app.bsky.feed.post']) {
-            $lastCreatedAt = $atGitHubData.Tables['app.bsky.feed.post'].Select("createdAt IS NOT NULL", "createdAt DESC")[0].createdAt -as [DateTimeOffset]
-            Write-Host "Last Created At: $lastCreatedAt"
-            "cursor=$($lastCreatedAt.ToUnixTimeMilliseconds())"
+            $lastCreatedAtTime = $atGitHubData.Tables['app.bsky.feed.post'].Select("createdAt IS NOT NULL", "createdAt DESC")[0].message.time_us
+            if ($lastCreatedAtTime) {
+                Write-Host "Last time_us: $lastCreatedAtTime"
+                "cursor=$lastCreatedAtTime"
+            } else {
+                "cursor=$([DateTimeOffset]::Now.Add(-$Since).ToUnixTimeMilliseconds())"
+            }            
         } else {
             "cursor=$([DateTimeOffset]::Now.Add(-$Since).ToUnixTimeMilliseconds())"             
         }

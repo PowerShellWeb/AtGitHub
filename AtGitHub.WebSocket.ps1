@@ -246,13 +246,19 @@ $jetstreamUrl = @(
         foreach ($did in $Dids) {
             "wantedDids=$([Uri]::EscapeDataString($did))"
         }
-        "cursor=$([DateTimeOffset]::Now.Add(-$Since).ToUnixTimeMilliseconds())" 
+        if ($atGitHubData.Tables['app.bsky.feed.post']) {
+            $lastCreatedAt = $atGitHubData.Tables['app.bsky.feed.post'].Select("createdAt IS NOT NULL", "createdAt DESC")[0].createdAt -as [DateTimeOffset]
+            Write-Host "Last Created At: $lastCreatedAt"
+            "cursor=$($lastCreatedAt.ToUnixTimeMilliseconds())"
+        } else {
+            "cursor=$([DateTimeOffset]::Now.Add(-$Since).ToUnixTimeMilliseconds())"             
+        }
     ) -join '&'
 ) -join ''
 
 $Jetstream = WebSocket -SocketUrl $jetstreamUrl -Query @{
-    wantedCollections = $collections
-    cursor = ([DateTimeOffset]::Now - $since).ToUnixTimeMilliseconds()
+    # wantedCollections = $collections
+    # cursor = ([DateTimeOffset]::Now - $since).ToUnixTimeMilliseconds()
 } -TimeOut $TimeOut
 
 filter toAtUri {

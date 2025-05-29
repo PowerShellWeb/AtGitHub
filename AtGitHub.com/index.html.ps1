@@ -1,6 +1,6 @@
 $Title = 'AtGitHub'
 
-$TopLevelLinks = 'Repos','Gists','Discussions', 'Issues', 'Pull Requests'
+$TopLevelLinks = 'Repos','Gists','Discussions', 'Issues', 'Pulls'
 
 $navigation = @($TopLevelLinks |
     ForEach-Object -Begin {

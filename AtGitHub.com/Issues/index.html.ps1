@@ -4,8 +4,7 @@ if ($psScriptRoot -and -not $site.AtGitHub) {
 }
 $Title = "Issues"
 $Description = "GitHub Issues mentioned in BlueSky"
-$pattern = "/$($MyInvocation.MyCommand.Name)/\d+"
-
+$pattern = "/issues?/\d+"
 "<style>"
 "table {
     width: 80%;
@@ -38,7 +37,7 @@ foreach ($row in $site.AtGitHub.Tables['app.bsky.feed.post'].Select('','LikeCoun
     "<a href='$($row.message | at.web)'>$(
         @(foreach ($line in $row.message.commit.record.text -split "(?>\r\n|\n)") {
             [Web.HttpUtility]::HtmlEncode($line)
-        }) -join '<br />'        
+        }) -join '<br />'
     )</a>"
     "</td>"
     "<td>$($row.message.commit.record.langs -join '')</td>"    

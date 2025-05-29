@@ -1,5 +1,7 @@
 $Title = 'AtGitHub'
 
+$Description = 'At Protocol GitHub'
+
 $TopLevelLinks = 'Repos','Gists','Discussions', 'Issues', 'Pulls'
 
 $navigation = @($TopLevelLinks |
@@ -10,7 +12,6 @@ $navigation = @($TopLevelLinks |
     } -End {
         "</nav>"
     }) -join [Environment]::NewLine
-
 
 $style = @"
 <style type='text/css'>

@@ -196,8 +196,11 @@ if ($batch) {
     }
 }
 
-$totalTime = $watchStart - [DateTime]::Now
+$totalTime = [DateTime]::Now - $watchStart
 Write-Host "$totalProcessed items processed in $($totalTime) - Average time per item: $($totalProcessed / $totalTime.TotalSeconds) items/sec" -ForegroundColor Cyan
+
+git pull *>&1 | Out-Host
+$LASTEXITCODE = 0
     
 $atPackage =
     [IO.Packaging.Package]::Open(

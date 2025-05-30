@@ -3,7 +3,7 @@ param(
     $did,
     
     [double]
-    $MinimumTagPopularity = 0.05,
+    $MinimumTagPopularity = 0.01,
 
     [double]
     $BaseEmphasis = 1.5,
@@ -14,7 +14,7 @@ param(
 
 # Set a title and description, so that it shows up in metadata
 $Title = "Tags"
-$Description = "My BlueSky feed, but just the tags"
+$Description = "Popular hashtags"
 
 # If we have already cached the AtProto data, use it
 if ($site.AtData) {

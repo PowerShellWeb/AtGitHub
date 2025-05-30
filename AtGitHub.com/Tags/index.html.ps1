@@ -3,7 +3,7 @@ param(
     $did,
     
     [double]
-    $MinimumTagPopularity = 0.01,
+    $MinimumTagPopularity = 0.00,
 
     [double]
     $BaseEmphasis = 1.5,

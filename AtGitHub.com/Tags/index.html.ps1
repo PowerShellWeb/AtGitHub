@@ -58,8 +58,8 @@ a {
 </style>
 "@
 "<div class='header'>"
-"<h1>Hashtags</h1>"
-"<p>My BlueSky feed, but just the tags</p>"
+"<h1>$Title</h1>"
+"<h3>$Description</h3>"
 "</div>"
 
 "<div class='hashtagGrid'>"

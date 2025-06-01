@@ -68,9 +68,11 @@ $style = @"
 $header = @"
 <div class='header'>
 <a href='/'>
+<svg>
 $(
     Get-Content .\Assets\AtGitHub-Animated.svg -Raw
 )
+</svg>
 <h1>
 $Title
 </h1>

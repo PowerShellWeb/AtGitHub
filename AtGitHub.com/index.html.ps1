@@ -2,7 +2,7 @@ $Title = 'AtGitHub'
 
 $Description = 'At Protocol GitHub'
 
-$TopLevelLinks = 'Gists','Discussions', 'Issues', 'Posts','Pulls','Tags'
+$TopLevelLinks = 'Repos', 'Gists','Discussions', 'Issues', 'Posts','Pulls','Tags'
 
 $navigation = @($TopLevelLinks |
     ForEach-Object -Begin {

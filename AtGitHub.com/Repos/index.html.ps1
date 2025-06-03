@@ -134,13 +134,13 @@ $postsTable = $site.AtData.Tables['app.bsky.feed.post']
 $likesTable = $site.AtData.Tables['app.bsky.feed.like']
 $repostsTable = $site.AtData.Tables['app.bsky.feed.repost']
 
-$totalInterations = $postsTable.Rows.Count + $likesTable.Rows.Count + $repostsTable.Rows.Count
+$totalInteractions = $postsTable.Rows.Count + $likesTable.Rows.Count + $repostsTable.Rows.Count
 
 #region Relative Weighting
 $relativeWeights = @{
-    'app.bsky.feed.post'    = 10 * $postsTable.Rows.Count   / ($totalInterations - $postsTable.Rows.Count)
-    'app.bsky.feed.like'    = 1 * $likesTable.Rows.Count    / ($totalInterations - $likesTable.Rows.Count)
-    'app.bsky.feed.repost'  = 5 * $repostsTable.Rows.Count  / ($totalInterations - $repostsTable.Rows.Count)
+    'app.bsky.feed.post'    = 10 # *  [Math]::Round(1 - $postsTable.Rows.Count   / $totalInteractions, 4)
+    'app.bsky.feed.like'    = 1  # *  [Math]::Round(1 - $likesTable.Rows.Count    / $totalInteractions, 4)
+    'app.bsky.feed.repost'  = 5  # *  [Math]::Round(1 - $repostsTable.Rows.Count    / $totalInteractions,  4)
 }
 #endregion Relative Weighting
 
@@ -154,13 +154,13 @@ $repoSummary = foreach ($row in $reposTable) {
         $repostCount += $post.RepostCount
     }
     $score =
-        $posts.Count +
+        ($posts.Count * $relativeWeights['app.bsky.feed.post']) +
         ($likeCount * $relativeWeights['app.bsky.feed.like']) + 
         ($repostCount * $relativeWeights['app.bsky.feed.repost'])
 
     $score = $score
 
-    $score = [Math]::Round($score, 2)
+    $score = [Math]::Round($score)
 
     [PSCustomObject][Ordered]@{
         PSTypeName = 'AtGitHub.Repo.Summary'

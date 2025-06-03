@@ -131,9 +131,9 @@ $totalInterations = $postsTable.Rows.Count + $likesTable.Rows.Count + $repostsTa
 
 #region Relative Weighting
 $relativeWeights = @{
-    'app.bsky.feed.post'    = 10 * $postsTable.Rows.Count   / ($totalInterations - $postsTable.Rows.Count)
-    'app.bsky.feed.like'    = 1 * $likesTable.Rows.Count    / ($totalInterations - $likesTable.Rows.Count)
-    'app.bsky.feed.repost'  = 5 * $repostsTable.Rows.Count  / ($totalInterations - $repostsTable.Rows.Count)
+    'app.bsky.feed.post'    = 10 # * $postsTable.Rows.Count   / ($totalInterations - $postsTable.Rows.Count)
+    'app.bsky.feed.like'    = 1 # * $likesTable.Rows.Count    / ($totalInterations - $likesTable.Rows.Count)
+    'app.bsky.feed.repost'  = 5 # * $repostsTable.Rows.Count  / ($totalInterations - $repostsTable.Rows.Count)
 }
 #endregion Relative Weighting
 
@@ -149,7 +149,7 @@ $repoSummary = foreach ($row in $reposTable) {
         $repostCount += $post.RepostCount
     }
     $score =
-        $posts.Count +
+        ($posts.Count * $relativeWeights['app.bsky.feed.post']) +
         ($likeCount * $relativeWeights['app.bsky.feed.like']) + 
         ($repostCount * $relativeWeights['app.bsky.feed.repost'])
 

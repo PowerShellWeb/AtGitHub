@@ -2,7 +2,7 @@ $Title = 'AtGitHub'
 
 $Description = 'At Protocol GitHub'
 
-$TopLevelLinks = 'Repos', 'Gists','Discussions', 'Issues', 'Posts','Pulls','Tags'
+$TopLevelLinks = 'Users', 'Repos', 'Gists', 'Discussions', 'Issues', 'Posts', 'Pulls', 'Tags'
 
 $navigation = @($TopLevelLinks |
     ForEach-Object -Begin {
@@ -32,7 +32,7 @@ $style = @"
     text-align: center;
     margin: 2em;
     height: 20%;
-    grid-area: header;    
+    grid-area: header;
 }
 
 .navigation {
@@ -42,14 +42,14 @@ $style = @"
     grid-area: navigation;
 }
 
-.content {        
+.content {
     margin: 3em;
     height: 33%;
     grid-area: main;
     text-align: center;
 }
 
-.corner {    
+.corner {
     position: fixed;
     display: grid;
     margin-right: 0.5%;

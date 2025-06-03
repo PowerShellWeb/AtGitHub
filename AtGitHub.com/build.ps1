@@ -1,10 +1,24 @@
 param(
+# One or more file paths to build.
 [string[]]
-$FilePath
+$FilePath,
+
+# If set, will generate an archive.zip file of the current directory.
+[switch]
+$Archive
 )
 
 # Push into the script root directory
 if ($PSScriptRoot) { Push-Location $PSScriptRoot }
+
+# Creation of a sitewide object to hold configuration information.
+$Site = [Ordered]@{}
+$Site.Files = if ($filePath) {
+    Get-ChildItem -Recurse -File -Path $FilePath
+} else {
+    Get-ChildItem -Recurse -File
+}
+$Site.PSScriptRoot = "$PSScriptRoot"
 
 #region Common Functions and Filters
 $functionFileNames = 'functions', 'function', 'filters', 'filter'
@@ -17,14 +31,6 @@ foreach ($file in $functionFiles) {
     . $file.FullName
 }
 #endregion Common Functions and Filters
-
-# Creation of a sitewide object to hold configuration information.
-$Site = [Ordered]@{}
-$Site.Files = if ($filePath) {
-    Get-ChildItem -Recurse -File -Path $FilePath
-} else {
-    Get-ChildItem -Recurse -File
-}
 
 # Set an alias to buildFile.ps1
 Set-Alias BuildFile ./buildFile.ps1
@@ -85,7 +91,15 @@ $lastBuildTime = [DateTime]::Now
 # Start the clock on the build process
 $buildStart = [DateTime]::Now
 # pipe every file we find to buildFile
-$Site.Files | . buildFile
+try {
+    $Site.Files | . buildFile.ps1 -Site $Site -GitHubEvent $gitHubEvent
+} catch {
+    $errorInfo = $_
+    "##[error]$($errorInfo | Out-String)"
+    throw $errorInfo
+}
+
+
 # and stop the clock
 $buildEnd = [DateTime]::Now
 
@@ -129,7 +143,9 @@ $newLastBuild | ConvertTo-Json -Depth 2 > lastBuild.json
 #endregion lastBuild.json
 
 #region archive.zip
-#Create an archive of the current deployment.
-Compress-Archive -Path $pwd -DestinationPath "archive.zip" -CompressionLevel Optimal -Force
-#endregion archive.zip
+if ($site.Archive) {
+    #Create an archive of the current deployment.
+    Compress-Archive -Path $pwd -DestinationPath "archive.zip" -CompressionLevel Optimal -Force
+    #endregion archive.zip
+}
 if ($PSScriptRoot) { Pop-Location }

@@ -126,7 +126,7 @@ $progressId = Get-Random
                     $page[$keyValue.Key] = $keyValue.Value
                 }
             }
-            $file | from_markdown | layout @layoutParameters
+            $file | from_markdown
         }
         # If it's a typescript file, we'll compile it to JS.
         '.ts' {
@@ -163,7 +163,14 @@ $progressId = Get-Random
                     }
                 }
             }
-            . $file @FileParameters
+            try {
+                . $file @FileParameters
+            } catch {
+                $errorInfo = $_
+                "##[error]$($errorInfo | Out-String)"
+                throw $errorInfo
+            }
+            
         }
     }
 

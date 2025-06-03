@@ -92,7 +92,7 @@ $lastBuildTime = [DateTime]::Now
 $buildStart = [DateTime]::Now
 # pipe every file we find to buildFile
 try {
-    $Site.Files | . buildFile.ps1 -Site $Site -GitHubEvent $gitHubEvent
+    $Site.Files | . buildFile
 } catch {
     $errorInfo = $_
     "##[error]$($errorInfo | Out-String)"

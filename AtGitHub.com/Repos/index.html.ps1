@@ -10,13 +10,13 @@ if ($PSScriptRoot) { Push-Location $PSScriptRoot }
 if ($psScriptRoot -and -not $site.AtGitHub) {
     . ($PSScriptRoot | Split-Path | Join-Path -ChildPath 'AtGitHub.DataSet.ps1')
 }
+
 $Title = "Repos"
 $Description = "GitHub Repos"
-$pattern = "/pull/\d+"
 
 "<style>"
 "table {
-    width: 80%;
+    width: 90%;
     margin-left: auto;
     margin-right: auto;    
 }"    
@@ -28,14 +28,21 @@ $pattern = "/pull/\d+"
 
 table.sortable td,
 table.sortable th {
-  padding: 0.125em 0.25em;
-  width: 8em;
+  padding: 0.125em 0.25em;  
 }
 
 table.sortable th {
   font-weight: bold;
-  border-bottom: thin solid #888;
+  // border-bottom: thin solid var(--foreground);  
   position: relative;
+}
+
+table.sortable th:not([class~="num"]) {
+    width: 10rem;
+}
+
+table.sortable th[class~="num"] {
+    width: 5rem;
 }
 
 table.sortable th.no-sort {
@@ -103,7 +110,7 @@ table.sortable th button:focus,
 table.sortable th button:hover {
   padding: 2px;
   border: 2px solid currentcolor;
-  background-color: #e5f4ff;
+  background-color: var(--background);
 }
 
 table.sortable th button:focus span,
@@ -126,12 +133,17 @@ $reposTable = $site.AtData.Tables['github.repository']
 $postsTable = $site.AtData.Tables['app.bsky.feed.post']
 $likesTable = $site.AtData.Tables['app.bsky.feed.like']
 $repostsTable = $site.AtData.Tables['app.bsky.feed.repost']
+
 $totalInterations = $postsTable.Rows.Count + $likesTable.Rows.Count + $repostsTable.Rows.Count
+
+#region Relative Weighting
 $relativeWeights = @{
-    'app.bsky.feed.post' = $postsTable.Rows.Count / $totalInterations
-    'app.bsky.feed.like' = $likesTable.Rows.Count / $totalInterations
-    'app.bsky.feed.repost' = $repostsTable.Rows.Count / $totalInterations
+    'app.bsky.feed.post'    = 10 * $postsTable.Rows.Count   / ($totalInterations - $postsTable.Rows.Count)
+    'app.bsky.feed.like'    = 1 * $likesTable.Rows.Count    / ($totalInterations - $likesTable.Rows.Count)
+    'app.bsky.feed.repost'  = 5 * $repostsTable.Rows.Count  / ($totalInterations - $repostsTable.Rows.Count)
 }
+#endregion Relative Weighting
+
 $repoSummary = foreach ($row in $reposTable) {
     $mentions   = $row.GetChildRows('Mentions')
     $posts      = $mentions.GetChildRows('Posts')
@@ -141,10 +153,12 @@ $repoSummary = foreach ($row in $reposTable) {
         $likeCount += $post.LikeCount
         $repostCount += $post.RepostCount
     }
-    $score = 
-        $posts.Count  + 
-            ($likeCount * $relativeWeights['app.bsky.feed.like']) + 
-            ($repostCount * $relativeWeights['app.bsky.feed.repost'])
+    $score =
+        $posts.Count +
+        ($likeCount * $relativeWeights['app.bsky.feed.like']) + 
+        ($repostCount * $relativeWeights['app.bsky.feed.repost'])
+
+    $score = $score
 
     $score = [Math]::Round($score, 2)
 
@@ -167,6 +181,7 @@ $repoSummary = $repoSummary | Sort-Object -Property Score -Descending
 "<table class='sortable'>"
 "<thead>"
 "<tr>"
+"<th class='num'><button>Rank<span aria-hidden='true'></span></button></th>"
 "<th><button>Owner<span aria-hidden='true'></span></button></th>"
 "<th><button>Repository<span aria-hidden='true'></span></button></th>"
 "<th class='num'><button>Posts<span aria-hidden='true'></span></button></th>"
@@ -176,11 +191,16 @@ $repoSummary = $repoSummary | Sort-Object -Property Score -Descending
 "</tr>"
 "</thead>"
 "<tbody>"
+$rank = 0 
 foreach ($repo in $repoSummary) {
     if ($repo.Mentions.uri.DnsSafeHost -ne 'github.com') {
         continue
     }
 "<tr>"
+"<td>"
+$rank++
+$rank
+"</td>"
 "<td>"
 "<a href='https://github.com/$($repo.owner)'>"
 $repo.Owner
@@ -188,7 +208,11 @@ $repo.Owner
 "</td>"
 "<td>"
 "<a href='https://github.com/$($repo.owner)/$($repo.Repository)'>"
-$repo.Repository
+if ($repo.Repository.Length -gt 40) {
+    $repo.Repository.Substring(0, 40) + '...'
+} else {
+    $repo.Repository
+}
 "</a>"
 "</td>"
 "<td>"

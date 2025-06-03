@@ -81,13 +81,19 @@ $navigation
 </div>
 "@
 
+
+
+
 $content = @"
 <div class='content'>
 $(
 if ($site.AtData) {
+    $FirstPostTime = $site.AtData.Tables['app.bsky.feed.post'].Select('','createdAt ASC')[0].createdAt
+    $Description = "AtGitHub | $($site.AtData.Tables['app.bsky.feed.post'].Rows.Count) posts | $($site.AtData.Tables['app.bsky.feed.like'].Rows.Count) likes | $($site.AtData.Tables['app.bsky.feed.repost'].Rows.Count) reposts since $($FirstPostTime.ToShortDateString())"
     "<h2>$($site.AtData.Tables['app.bsky.feed.post'].Rows.Count) posts</h2>"
     "<h3>$($site.AtData.Tables['app.bsky.feed.like'].Rows.Count) likes</h3>"
     "<h4>$($site.AtData.Tables['app.bsky.feed.repost'].Rows.Count) reposts</h4>"
+    "<h5>Since $($FirstPostTime.ToShortDateString())</h5>"
 } else {
     "No data available."
 }

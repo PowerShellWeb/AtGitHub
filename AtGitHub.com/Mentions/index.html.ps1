@@ -101,11 +101,11 @@ foreach ($mention in $postsByMention.GetEnumerator() | Sort-Object { $_.Value.Co
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    line-height: 3rem;    
+    line-height: 3rem;
 }
 
 .wordCloud a {
-    display: block;  
+    display: block;
     padding: .8rem .8rem;
     text-decoration: none;  
 }
@@ -113,14 +113,16 @@ foreach ($mention in $postsByMention.GetEnumerator() | Sort-Object { $_.Value.Co
 
 "</style>"
 "<ul class='wordCloud'>"
-$popularEnoughTags = $postsByPopularity.GetEnumerator() |
-    Where-Object { $_.Value -gt $MinimumMentionPopularity }
+$popularEnoughTags = @($postsByPopularity.GetEnumerator() |
+    Where-Object { $_.Value -gt $MinimumMentionPopularity })
 
-foreach ($popularTag in ($popularEnoughTags | Get-Random -Count $popularEnoughTags.Count)) {
-    "<li>"
-    "<a href='https://bsky.app/profile/$($didMap[$popularTag.Key])' style='font-size: $([Math]::Round($BaseEmphasis + ($popularTag.Value * $ExtraWeight), 4))rem'>"
-    $popularTag.Key
-    "</a>"
-    "</li>"
+if ($popularEnoughTags) {
+    foreach ($popularTag in ($popularEnoughTags | Get-Random -Count $popularEnoughTags.Count)) {
+        "<li>"
+        "<a href='https://bsky.app/profile/$($didMap[$popularTag.Key])' style='font-size: $([Math]::Round($BaseEmphasis + ($popularTag.Value * $ExtraWeight), 4))rem'>"
+        $popularTag.Key
+        "</a>"
+        "</li>"
+    }
 }
 "</div>"

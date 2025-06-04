@@ -108,14 +108,17 @@ foreach ($tag in $postsByTag.GetEnumerator() | Sort-Object { $_.Value.Count } -D
 
 "</style>"
 "<ul class='wordCloud'>"
-$popularEnoughTags = $postsByPopularity.GetEnumerator() |
-    Where-Object { $_.Value -gt $MinimumTagPopularity }
 
-foreach ($popularTag in ($popularEnoughTags | Get-Random -Count $popularEnoughTags.Count)) {
-    "<li>"
-    "<a href='https://bsky.app/hashtag/$($popularTag.Key)' style='font-size: $([Math]::Round($BaseEmphasis + ($popularTag.Value * $ExtraWeight), 4))rem'>"
-    '#' + $popularTag.Key
-    "</a>"
-    "</li>"
+$popularEnoughTags = @($postsByPopularity.GetEnumerator() |
+    Where-Object { $_.Value -gt $MinimumTagPopularity })
+if ($popularEnoughTags) {
+    foreach ($popularTag in ($popularEnoughTags | Get-Random -Count $popularEnoughTags.Count)) {
+        "<li>"
+        "<a href='https://bsky.app/hashtag/$($popularTag.Key)' style='font-size: $([Math]::Round($BaseEmphasis + ($popularTag.Value * $ExtraWeight), 4))rem'>"
+        '#' + $popularTag.Key
+        "</a>"
+        "</li>"
+    }
 }
+
 "</div>"

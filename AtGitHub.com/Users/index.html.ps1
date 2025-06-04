@@ -203,11 +203,11 @@ $userSummary = $ownerSummary.GetEnumerator() | Sort-Object {$_.Value.Score} -Des
 $rank = 0
 foreach ($user in $userSummary) {    
 "<tr>"
-"<td>"
 $rank++
+"<td id='rank-$rank'>"
 $rank
 "</td>"
-"<td>"
+"<td id='$($user.Owner)'>"
 "<a href='https://github.com/$($user.owner)'>"
 $user.Owner
 "</a>"

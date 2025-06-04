@@ -197,16 +197,16 @@ foreach ($repo in $repoSummary) {
         continue
     }
 "<tr>"
-"<td>"
 $rank++
+"<td id='rank-$rank'>"
 $rank
 "</td>"
-"<td>"
+"<td id='$($repo.owner)'>"
 "<a href='https://github.com/$($repo.owner)'>"
 $repo.Owner
 "</a>"
 "</td>"
-"<td>"
+"<td id='$($repo.owner)-$($repo.Repository)'>"
 "<a href='https://github.com/$($repo.owner)/$($repo.Repository)'>"
 if ($repo.Repository.Length -gt 40) {
     $repo.Repository.Substring(0, 40) + '...'

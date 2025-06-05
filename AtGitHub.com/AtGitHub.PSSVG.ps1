@@ -1,6 +1,5 @@
 #requires -Module PSSVG
 $AssetsPath = $PSScriptRoot | Join-Path -ChildPath "Assets"
-
 if (-not (Test-Path $AssetsPath)) {
     New-Item -ItemType Directory -Path $AssetsPath | Out-Null
 }

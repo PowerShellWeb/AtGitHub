@@ -1,4 +1,8 @@
 {
-  "analyticsID": "G-B1P4W40MWT",  
+  "analyticsID": "G-B1P4W40MWT",
+  "FavIcon": [
+    "https://AtGitHub.com/Assets/AtGitHub-32x32.png",
+    "https://AtGitHub.com/Assets/AtGitHub-16x16.png"
+  ],
   "Image": "https://AtGitHub.com/Assets/AtGitHub.png"
 }

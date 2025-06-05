@@ -18,25 +18,14 @@ param(
     ),
     
     [string[]]
-    $FavIcon,
-
-    [Collections.IDictionary]
-    $Menu
+    $FavIcon
 )
 
 $argsAndinput = @($args) + @($input)
 
-if (-not $Site) {
-    $Site = [Ordered]@{}
-}
-
-if (-not $page) {
-    $page = [Ordered]@{}
-}
-
-if (-not $page.MetaData) {
-    $page.MetaData = [Ordered]@{}
-}
+if (-not $Site) { $Site = [Ordered]@{} }
+if (-not $page) { $page = [Ordered]@{} }
+if (-not $page.MetaData) { $page.MetaData = [Ordered]@{} }
 
 $page.MetaData['og:title'] = 
     if ($title) {
@@ -48,26 +37,20 @@ $page.MetaData['og:title'] =
     }
 
 $page.MetaData['og:description'] =
-    if ($description) {
-        $description
-    } elseif ($page.description) {
-        $page.description
-    } elseif ($site.description) {
-        $site.description
-    }
+    if ($description) { $description } 
+    elseif ($page.description) { $page.description } 
+    elseif ($site.description) { $site.description }
 
 $page.MetaData['og:image'] =
-    if ($image) {
-        $image
-    } elseif ($page.image) {
-        $page.image
-    } elseif ($site.image) {
-        $site.image
-    }
+    if ($image) { $image } 
+    elseif ($page.image) { $page.image } 
+    elseif ($site.image) { $site.image }
 
 if ($page.MetaData['og:image']) {
     $page.MetaData['og:image'] = $page.MetaData['og:image'] -replace '^/', '' -replace '^[^h]', '/'
 }
+
+
 
 $style = @"
 body {
@@ -77,6 +60,24 @@ body {
 }    
 pre, code {
     font-family: '$CodeFont', monospace;
+}
+a, a:visited {
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.mainGrid {
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    grid:
+        "$( @('header') * 9)" minmax(100px, auto)
+        "$( @('main') * 9)" minmax(100px, auto)
+        "$( @('main') * 9)" minmax(100px, auto)
+        "$( @('main') * 9)" minmax(100px, auto)
+        "$( @('footer') * 9)" minmax(100px, auto)
+        / $( @('1fr') * 9);
+    align-content: center;
 }
 "@
 
@@ -107,10 +108,18 @@ pre, code {
             if ($FavIcon) { 
                 switch -regex ($FavIcon) {
                     '\.svg$' {
-                        "<link rel='icon' href='$_' type='image/x-icon' />"
+                        if ($_ -match '\d+x\d+') {
+                            "<link rel='icon' href='$_' type='image/svg+xml' sizes='$($matches.0)' />"
+                        } else {
+                            "<link rel='icon' href='$_' type='image/svg+xml' sizes='any' />"
+                        }                        
                     }
                     '\.png$' {
-                        "<link rel='icon' href='$_' type='image/icon' />"
+                        if ($_ -match '\d+x\d+') {
+                            "<link rel='icon' href='$_' type='image/png' sizes='$($matches.0)' />"
+                        } else {
+                            "<link rel='icon' href='$_' type='image/png' sizes='any' />"
+                        }                        
                     }
                 }
             }
@@ -126,8 +135,7 @@ pre, code {
                 }
             }
         )
-        $ImportMap
-        
+        $ImportMap        
         <style>
 $style
         </style>
@@ -141,7 +149,9 @@ $style
         )
     </head>
     <body>
-        $($argsAndinput -join [Environment]::NewLine)
+        <div id='content'>
+            $($argsAndinput -join [Environment]::NewLine)
+        </div>
         <script>hljs.highlightAll();</script>
     </body>
 </html>

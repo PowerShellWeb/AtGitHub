@@ -15,19 +15,6 @@ $navigation = @($TopLevelLinks |
 
 $style = @"
 <style type='text/css'>
-.grid9x9 {
-  display: grid;
-  height: 100vh;
-  grid:
-    "$( @('header') * 9)" minmax(100px, auto)
-    "$( @('main') * 9)" minmax(100px, auto)
-    "$( @('footer') * 9)" minmax(100px, auto)
-    / $( @('1fr') * 9);
-  align-content: center;
-  grid-auto-rows: auto
-}
-
-
 .header {
     text-align: center;
     margin: 2em;
@@ -39,7 +26,6 @@ $style = @"
     text-align: center;
     margin: 1em;
     height: 5%;
-    grid-area: navigation;
 }
 
 .content {
@@ -87,11 +73,16 @@ $navigation
 $content = @"
 <div class='content'>
 $(
-if ($site.AtData) {    
-    $Description = "AtGitHub | $($site.AtData.Tables['app.bsky.feed.post'].Rows.Count) posts | $($site.AtData.Tables['app.bsky.feed.like'].Rows.Count) likes | $($site.AtData.Tables['app.bsky.feed.repost'].Rows.Count) reposts"
-    "<h2>$($site.AtData.Tables['app.bsky.feed.post'].Rows.Count) posts</h2>"
-    "<h3>$($site.AtData.Tables['app.bsky.feed.like'].Rows.Count) likes</h3>"
-    "<h4>$($site.AtData.Tables['app.bsky.feed.repost'].Rows.Count) reposts</h4>"    
+if ($site.AtData) {
+    $tableCounts = 
+        "$($site.AtData.Tables['app.bsky.feed.post'].Rows.Count) posts",
+        "$($site.AtData.Tables['app.bsky.feed.like'].Rows.Count) likes",
+        "$($site.AtData.Tables['app.bsky.feed.repost'].Rows.Count) reposts"
+
+    $Description = "AtGitHub | $($tableCounts -join ' | ')"
+
+    "<h3>$($tableCounts -join ' | ')</h3>"
+    "<h4>Last Updated @ $(if ($site.LastBuildTime -is [DateTime]) { $site.LastBuildTime.ToString('r') })</h4>"
 } else {
     "No data available."
 }
@@ -108,13 +99,7 @@ $(Get-Content -Path ./Assets/GitHub.svg -Raw)
 </div>
 </div>
 "@
-
-   
-"<div class='grid9x9'>"
-
-$style,
-    $corner,
-        $header,
-            $content -join [Environment]::NewLine
-
+  
+"<div class='mainGrid'>"
+$style, $corner, $header, $content -join [Environment]::NewLine
 "</div>"

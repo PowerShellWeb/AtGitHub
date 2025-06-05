@@ -13,11 +13,10 @@ if ($PSScriptRoot) { Push-Location $PSScriptRoot }
 
 # Creation of a sitewide object to hold configuration information.
 $Site = [Ordered]@{}
-$Site.Files = if ($filePath) {
-    Get-ChildItem -Recurse -File -Path $FilePath
-} else {
-    Get-ChildItem -Recurse -File
-}
+$Site.Files = 
+    if ($filePath) { Get-ChildItem -Recurse -File -Path $FilePath } 
+    else { Get-ChildItem -Recurse -File }
+
 $Site.PSScriptRoot = "$PSScriptRoot"
 
 #region Common Functions and Filters
@@ -49,6 +48,11 @@ $gitHubEvent =
 if (Test-Path 'CNAME') {
     $Site.CNAME = $CNAME = (Get-Content -Path 'CNAME' -Raw).Trim()
     $Site.RootUrl = "https://$CNAME/"
+} elseif (
+    ($site.PSScriptRoot | Split-Path -Leaf) -like '*.*'
+) {
+    $site.CNAME = $CNAME = ($site.PSScriptRoot | Split-Path -Leaf)
+    $site.RootUrl = "https://$CNAME/"
 }
 
 # If we have a config.json file, it can be used to set the site configuration.
@@ -85,7 +89,7 @@ if (Test-Path 'config.ps1') {
 }
 
 # Start the clock
-$lastBuildTime = [DateTime]::Now
+$site['LastBuildTime'] = $lastBuildTime = [DateTime]::Now
 #region Build Files
 
 # Start the clock on the build process

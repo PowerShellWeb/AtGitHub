@@ -82,7 +82,14 @@ if ($site.AtData) {
     $Description = "AtGitHub | $($tableCounts -join ' | ')"
 
     "<h3>$($tableCounts -join ' | ')</h3>"
-    "<h4>Last Updated @ $(if ($site.LastBuildTime -is [DateTime]) { $site.LastBuildTime.ToString('r') })</h4>"
+    if (-not $site.LastBuildTime) {
+        $site.LastBuildTime = [DateTime]::UtcNow
+    }
+    "<h4 data-last-updated='$($site.LastBuildTime.ToString('o'))' id='lastUpdated'></h4>"
+    "<script>"
+    "document.getElementById('lastUpdated').innerHTML = 'Last Updated @ ' + new Date('$($site.LastBuildTime.ToString('o'))').toLocaleString();"
+    "</script>"
+    # "<h4>Last Updated @ $(if ($site.LastBuildTime -is [DateTime]) { $site.LastBuildTime.ToString('r') })</h4>"
 } else {
     "No data available."
 }
